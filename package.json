@@ -1,0 +1,22 @@
+{
+  "name": "ltp",
+  "version": "1.0.0",
+  "description": "Translates LaTeX to Photomath solver syntax",
+  "main": "./src/ltp.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Bruno Ribarić",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "pegjs": "^0.10.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "private": true
+}
