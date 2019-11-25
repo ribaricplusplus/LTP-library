@@ -5,7 +5,8 @@ module.exports = {
     output:{
         path: path.resolve(__dirname, 'dist'),
         filename:"ltp.js",
-        library:"ltp"
+        library:"ltp",
+        libraryTarget:"umd"
     },
     entry:"./src/ltp.js"
 }
