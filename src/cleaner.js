@@ -1,17 +1,5 @@
 "use strict";
 let bracketed = require("./bracketed.js");
-/* The cleaner removes all LaTeX decorations from an expression that are
-semantically trivial.
-
-Some functionalities:
-    - Cleans \textcolor
-    - Cleans \cdot and \times
-    - Cleans \left and \right
-    - Cleans \text
-    - Cleans & (replace with whitespace)*/
-
-/* Print format is
-    message : context */
 class CleanerError extends Error {
     constructor(expression, pos, msg) {
         super(msg);
@@ -25,6 +13,16 @@ class CleanerError extends Error {
     }
 }
 
+/**
+ * Removes all semantically trivial LaTeX tokens, e.g. textcolor.
+ * 
+ * Cleaning might need to be done recursively (e.g. text within textcolor).
+ * The {@link bracketed#clean} method is the main cleaner method, which takes
+ * care of such recursion. It is the function into which the LaTeX expression should be
+ * passed for cleaning.
+ * 
+ * Tokens that will be cleaned are defined in {@link bracketed#doCleaning}.
+ */
 let cleaner = {
 
     clean(expression) {
@@ -37,9 +35,10 @@ let cleaner = {
         return expression;
     },
 
+
     doCleaning(expression) {
         expression = this.cleanTextColor(expression);
-        expression = this.cleanOperators(expression);
+        expression = this.convertOperators(expression);
         expression = this.cleanLeftRight(expression);
         expression = this.cleanText(expression);
         expression = this.cleanThingies(expression);
@@ -54,13 +53,11 @@ let cleaner = {
         return this.cleanArgumentedRemove(expression, "\\text", 1);
     },
 
-    /* Replaces \left and \right */
     cleanLeftRight(expression) {
         let matchPattern = /(\\left)|(\\right)/gi;
         return expression.replace(matchPattern, "");
     },
 
-    /* Thingies:, e.g. [5pt] and & */
     cleanThingies(expression) {
         let matchPattern = /\[\d+?pt\]/gi
         expression = expression.replace(matchPattern, "");
@@ -71,8 +68,10 @@ let cleaner = {
         return expression;
     },
 
-    /* Converts things such as \leq into actual operators */
-    cleanOperators(expression) {
+    /**
+     * Converts LaTeX operators into regular operators, e.g. \leq becomes <=.
+     */
+    convertOperators(expression) {
         var matchPattern;
         /* Multiplication */
         matchPattern = /(\\cdot)|(\\times)/gi;

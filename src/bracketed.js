@@ -1,6 +1,4 @@
 "use strict";
-/* Deals with brackets or throws an error if brackets are invalid.
-For example, for {hey{there}}beautiful bracketed.get returns hey{there}*/
 class BracketedError extends Error {
     constructor(expression, pos, msg) {
         super(msg);
@@ -16,6 +14,9 @@ class BracketedError extends Error {
     }
 }
 
+/**
+ * Manipulates expressions in brackets. Throws an exception for missing/invalid bracket pairs.
+ */
 let bracketed =
 {
     bracketPairs: {
@@ -24,9 +25,13 @@ let bracketed =
         '[': ']'
     },
 
-    /*  Returns the value inside brackets.
-        pos - position of the opening brace
-        expression - string */
+    /**
+     * Gets contents inside brackets maching given opening brace.
+     * For example, get("{hello}", 0) returns hello.
+     * @param {string} expression Expression that contains an expression inside brackets.
+     * @param {int} pos Index of the opening brace.
+     * @returns {string} Expression inside brackets.
+     */
     get(expression, pos) {
         if (!pos)
         {
@@ -35,9 +40,13 @@ let bracketed =
         return expression.substring(pos+1, this.findEnd(expression, pos));
     },
 
-    /*  Finds the index of the closing brace matching the given opening brace.
-        pos - index of the opening brace
-        expression - string*/
+    /**
+     * 
+     * @param {string} expression Expression that contains an expression inside brackets.
+     * @param {int} pos Index of the opening brace.
+     * @returns {int} Index of the closing brace matching the opening brace at pos.
+     * @throws {BracketedError}
+     */
     findEnd(expression, pos) {
         /*  Create a stack for brackets. Each time { is found, add it to the stack.
             Whenever } is found, pop one opening bracket from the stack.
