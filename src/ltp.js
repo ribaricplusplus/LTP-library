@@ -1,5 +1,5 @@
 "use strict";
-export function translate(inputText) {
+module.exports = function ltp(inputText) {
     let cleaner = require("./cleaner");
     let translator = require("./translator");
     let parser = require("./parser");
