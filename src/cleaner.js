@@ -1,37 +1,32 @@
 "use strict";
 let bracketed = require("./bracketed.js");
-class CleanerError extends Error {
-    constructor(expression, pos, msg) {
-        super(msg);
-        this.name = "CleanerError";
-        this.CONTEXT_LENGTH = 10; //Amount of context characters to print if error occurrs
-        if (expression) {
-            let printStartPos = (pos + this.CONTEXT_LENGTH) > expression.length ? expression.length : pos + this.CONTEXT_LENGTH;
-            let context = expression.substr(pos, printStartPos);
-            this.message = msg + ":" + context;;
-        }
-    }
-}
 
 /**
- * Removes all semantically trivial LaTeX tokens, e.g. textcolor.
+ * @class
  * 
- * Cleaning must be done recursively (e.g. text within textcolor can exist).
- * The {@link bracketed#clean} method is the main cleaner method, which takes
- * care of such recursion. It is the main function into which a LaTeX expression should be
- * passed for cleaning.
+ * Removes all semantically trivial LaTeX tokens such as textcolor.
  * 
- * Tokens that will be cleaned are defined by {@link bracketed#runRegisteredCleaners}.
+ * The [clean]{@link Cleaner#clean} method is the main Cleaner method to call with
+ * the expression to clean.
  * 
- * All methods are applied to the {@link cleaner#expression} member.
+ * Tokens that will be cleaned are defined by [runRegisteredCleaners]{@link Cleaner#runRegisteredCleaners}.
+ * 
  */
-let cleaner = {
-    expression:"",
-
+class Cleaner {
+    constructor() {
+        this.expression = "";
+    }
+    
+    /**
+     * The main Cleaner method which takes a decorated LaTeX expression and
+     * returns it in the form ready for parsing.
+     * @param {String} expression LaTeX expression to clean.
+     * @returns {String} Cleaned expression ready for parsing.
+     */
     clean(expression) {
         this.expression = expression;
         return this.cleanRecursively();
-    },
+    }
 
     cleanRecursively() {
         let startExpression = this.expression;
@@ -42,7 +37,7 @@ let cleaner = {
             this.runRegisteredCleaners();
         }
         return this.expression;
-    },
+    }
 
     /**
      * Invokes cleaner methods which define the tokens that are to be removed
@@ -54,27 +49,27 @@ let cleaner = {
          this.cleanLeftRight();
          this.cleanText();
          this.cleanThingies();
-    },
+    }
 
     cleanTextColor() {
         this.replaceFunctionWithParameter("\\textcolor", 2, 2);
-    },
+    }
 
     cleanText() {
         this.cleanFunctionWithParameter("\\text", 1);
-    },
+    }
 
     cleanLeftRight() {
         let matchPattern = /(\\left)|(\\right)/gi;
         this.expression = this.expression.replace(matchPattern, "");
-    },
+    }
 
-    cleanThingies(expression) {
+    cleanThingies() {
         let matchPattern = /\[\d+?pt\]/gi
         this.expression = this.expression.replace(matchPattern, "");
         matchPattern = "&";
         this.expression = this.expression.replace(matchPattern, " ");
-    },
+    }
 
     /**
      * Converts LaTeX operators into regular operators, e.g. \leq becomes <=.
@@ -101,7 +96,7 @@ let cleaner = {
                     return ">";
             }
         });
-    },
+    }
 
     /**
      * Removes [start, end) from expression, inserts the replacement in place of the removed part.
@@ -110,8 +105,10 @@ let cleaner = {
      * @param {int} start Start index of the substring to remove.
      * @param {int} end End index of the substring to remove, noninclusive.
      * @param {String} replacement String to insert at start position.
-     * @returns {Object} Object with properties expression - the new expression, and
-     * replacementEndPos - index where the replacement ends, inclusive.
+     * @returns {Object} Object with properties: <ul>
+     * <li><strong>expression</strong> - new expression</li>
+     * <li><strong>replacementEndPos</strong> - index where the replacement ends, inclusive</li></ul>
+     * 
      *
      */
     indexedReplacement(expression, start, end, replacement) {
@@ -124,7 +121,7 @@ let cleaner = {
             expression: newExp,
             replacementEndPos: newEnd
         };
-    },
+    }
    /**
     * Replaces a function of the form name{}{}{} with one of its parameters.
     * 
@@ -167,7 +164,7 @@ let cleaner = {
             this.expression = replacementObj.expression;
             startPos = this.expression.indexOf(matchPattern, replacementObj.replacementEndPos);
         }
-    },
+    }
 
     /**
      * Removes a function of the form name{}{}{}. 
@@ -195,4 +192,4 @@ let cleaner = {
 
 }
 
-module.exports = cleaner;
+module.exports = new Cleaner();
