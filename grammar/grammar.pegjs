@@ -261,7 +261,7 @@ environment "environment"
 / det2
 
 equations_system
-= "\\begin" _ system_type arg:environment_argument+ last_arg:root "\\end" _ system_type {
+= "\\begin" _ system_type _ arg:environment_argument+ last_arg:root "\\end" _ system_type _{
     arg.push(last_arg);
     return new LatexEnvironment("system", arg);
 }
@@ -274,7 +274,7 @@ environment_argument
 = arg:root "\\\\" {return arg;}
 
 det2
-= "\\begin" _ det_type _ a:root "&" b:root "\\\\" _ c:root "&" d:root "\\end" _ det_type {
+= "\\begin" _ det_type _ a:root "&" b:root "\\\\" _ c:root "&" d:root "\\end" _ det_type _{
     return new LatexEnvironment("det2", [a, b, c, d]);
 }
 

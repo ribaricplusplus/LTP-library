@@ -20,3 +20,8 @@ test("Throws CleanerError when textcolor misses arguments" ,() => {
     let latexExp = String.raw`\textcolor{10x+3}`;
     expect(() => {cleaner.clean(latexExp)}).toThrow();
 })
+
+test("Clean ampersand everywhere except within matrix", () => {
+    let latexExp = String.raw`2&3\begin{vmatrix}&\end{vmatrix}&`;
+    expect(cleaner.clean(latexExp)).toBe(String.raw`2 3\begin{vmatrix}&\end{vmatrix} `);
+})

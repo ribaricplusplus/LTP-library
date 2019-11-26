@@ -1,4 +1,3 @@
-"use strict";
 let bracketed = require("./bracketed.js");
 let CleanerError = require("./errors/cleaner_error");
 /**
@@ -51,6 +50,7 @@ class Cleaner {
          this.cleanText();
          this.cleanSpacing();
          this.cleanByRemoval();
+         this.cleanAmpersand();
     }
 
     cleanTextColor() {
@@ -71,6 +71,24 @@ class Cleaner {
         this.expression = this.expression.replace(matchPattern, "");
     }
 
+    /**
+     * The ampersand (&) gets very special treatment because it has meaning within matrices (as a separator),
+     * and should be removed in all other cases.
+     * */
+    cleanAmpersand(){
+        let matchPattern = /\\begin\s*?{\s*?(?:bmatrix|vmatrix)\s*}(?:.|\r|\n)*?\\end\s*{\s*?(?:bmatrix|vmatrix)\s*?}/gi
+        let matches = this.expression.matchAll(matchPattern);
+        for(let match of matches) {
+            let matchStartPos = match.index;;
+            let matchEndPos = matchStartPos+match[0].length;
+            let left = this.expression.substring(0, matchStartPos);
+            let between = this.expression.substring(matchStartPos, matchEndPos);
+            let right = this.expression.substring(matchEndPos, this.expression.length);
+            left = left.replace("&", " ");
+            right = right.replace("&", " ");
+            this.expression = left+between+right;
+        }
+    }
 
     /** Cleans decorative characters that need to be removed entirely (instead of being replaced by something).*/
     cleanByRemoval(){

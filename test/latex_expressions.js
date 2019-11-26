@@ -14,6 +14,11 @@ module.exports = {
         expected:"system(2x+3=7,5+log(2, x)x=16)"
     },
 
+    alignedSystemOfEquations:{
+        input:String.raw`\begin{align}2x+3y &= 7\\4x+7y &= 1\end{align}`,
+        expected: "system(2x+3y=7,4x+7y=1)"
+    },
+
     det3:{
         input:String.raw`\begin{bmatrix} 5 & -3 & 7 \\ -1 & 0 & 8 \\ 3 & 3 & 3\end{bmatrix}`,
         expected:"det3(5,-3,7,-1,0,8,3,3,3)"
