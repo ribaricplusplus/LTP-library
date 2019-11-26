@@ -257,16 +257,35 @@ integral
 
 environment "environment"
 = equations_system
+/ det3
+/ det2
 
 equations_system
-= "\\begin" _ "{cases}" arg:environment_argument+ last_arg:root "\\end" _ "{cases}" {
+= "\\begin" _ system_type arg:environment_argument+ last_arg:root "\\end" _ system_type {
     arg.push(last_arg);
     return new LatexEnvironment("system", arg);
 }
 
+system_type
+= "{" _ "cases" _"}"
+/ "{" _ "align" _ "}"
+
 environment_argument
 = arg:root "\\\\" {return arg;}
 
+det2
+= "\\begin" _ det_type _ a:root "&" b:root "\\\\" _ c:root "&" d:root "\\end" _ det_type {
+    return new LatexEnvironment("det2", [a, b, c, d]);
+}
+
+det3
+= "\\begin" _ det_type _ a:root "&" b:root "&" c:root "\\\\" _ d:root "&" e:root "&" f:root "\\\\" g:root "&" h:root "&" i:root "\\end" _ det_type _{
+    return new LatexEnvironment("det3", [a,b,c,d,e,f,g,h,i]);
+}
+
+det_type
+= "{" _ "bmatrix" _ "}"
+/ "{" _ "vmatrix" _ "}"
 
 /* TERMINALS */
 
@@ -285,7 +304,7 @@ calcunit "number"
 }
 
 operator
-= arg:[+\-*/\^=<>._] {
+= arg:[+\-*/\^=<>._!] {
     return new LatexCharacter(arg);
 }
 

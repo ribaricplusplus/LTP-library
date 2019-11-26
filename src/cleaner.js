@@ -49,7 +49,8 @@ class Cleaner {
          this.convertOperators();
          this.cleanLeftRight();
          this.cleanText();
-         this.cleanThingies();
+         this.cleanSpacing();
+         this.cleanByRemoval();
     }
 
     cleanTextColor() {
@@ -65,11 +66,16 @@ class Cleaner {
         this.expression = this.expression.replace(matchPattern, "");
     }
 
-    cleanThingies() {
+    cleanSpacing() {
         let matchPattern = /\[\d+?pt\]/gi
         this.expression = this.expression.replace(matchPattern, "");
-        matchPattern = "&";
-        this.expression = this.expression.replace(matchPattern, " ");
+    }
+
+
+    /** Cleans decorative characters that need to be removed entirely (instead of being replaced by something).*/
+    cleanByRemoval(){
+        let matchPattern = ",";
+        this.expression = this.expression.replace(matchPattern, "");
     }
 
     /**

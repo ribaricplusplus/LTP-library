@@ -39,58 +39,58 @@ class Translator {
             fraction: (funcObj) => {
                 return `{{${funcObj.arg[0]}}/{${funcObj.arg[1]}}}`;
             },
-    
+
             derivative: (funcObj) => {
                 return `derivation(${funcObj.arg[1]}, ${funcObj.arg[2]})`;
             },
-    
+
             latex_function: (funcObj) => {
                 funcObj.arg[1] = bracketed.get(funcObj.arg[1]);
                 return `function(${funcObj.arg[0]}, ${funcObj.arg[1]})=${funcObj.arg[2]}`;
             },
-    
+
             latex_function_inverse: (funcObj) => {
                 funcObj.arg[1] = bracketed.get(funcObj.arg[1]);
                 return `function_inverse(${funcObj.arg[0]}, ${funcObj.arg[1]})=${funcObj.arg[2]}`;
             },
-    
+
             binomial: (funcObj) => {
                 return `choose(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
             },
-    
+
             logarithm: (funcObj) => {
                 return `log(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
             },
-    
+
             logarithm_10: (funcObj) => {
                 return `log10(${funcObj.arg[0]})`;
             },
-    
+
             logarithm_ln: (funcObj) => {
                 return `ln(${funcObj.arg[0]})`;
             },
-    
+
             limit: (funcObj) => {
                 return `lim(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]})`;
             },
-    
+
             mean: (funcObj) => {
                 return `mean(${funcObj.arg[0]})`;
             },
-    
+
             degrees: (funcObj) => {
                 return `deg(${funcObj.arg[0]})`;
             }
         }
     }
 
-   /**
-    * Translates given LatexNode into solver syntax by calling other helper methods
-    * based on the LatexNode type.
-    * 
-    * @param {LatexNode} node The node to translate.
-    * @returns {String} Representation of the LatexNode in solver syntax.
-    */
+    /**
+     * Translates given LatexNode into solver syntax by calling other helper methods
+     * based on the LatexNode type.
+     * 
+     * @param {LatexNode} node The node to translate.
+     * @returns {String} Representation of the LatexNode in solver syntax.
+     */
     translate(node) {
         var result;
         switch (node.type) {
@@ -221,9 +221,8 @@ class Translator {
      */
     translateCalcunit(calcunitObj) {
         var result = "";
-        for(let arg of calcunitObj.arg)
-        {
-            result+=this.translateChar(arg);
+        for (let arg of calcunitObj.arg) {
+            result += this.translateChar(arg);
         }
         return result;
     }
@@ -240,8 +239,10 @@ class Translator {
             case "system":
                 result = this.translateEnvironmentSystem(envObj);
                 break;
-            case "determinant":
+            case "det2":
+            case "det3":
                 result = this.translateEnvironmentDeterminant(envObj);
+                break;
             default: //Unknown environment type
                 throw new TranslatorError(envObj);
         }
@@ -258,6 +259,25 @@ class Translator {
             translatedArgs.push(this.translate(arg));
         }
         return "system(" + translatedArgs.join(',') + ")";
+    }
+
+    /**
+     * Translates 2x2 and 3x3 matrices into determinants.
+     * @param {LatexEnvironment} detObj Matrix to find the determinant of.
+     */
+    translateEnvironmentDeterminant(detObj) {
+        let translatedArgs = [];
+        for (let arg of detObj.arg) {
+            translatedArgs.push(this.translate(arg));
+        }
+        let len;
+        switch (translatedArgs.length) {
+            case 4: len = "2";
+                break;
+            case 9: len = "3";
+                break;
+        }
+        return "det" + len + "(" + translatedArgs.join(',') + ")";
     }
 
 };
