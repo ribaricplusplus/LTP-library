@@ -16,8 +16,8 @@
     "webpack-cli": "^3.3.10"
   },
   "repository": {
-    "type": "",
-    "url": ""
+    "type": "git",
+    "url": "https://github.com/ribaricplusplus/LTP-library"
   },
   "private": true
 }

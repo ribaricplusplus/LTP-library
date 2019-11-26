@@ -1,3 +1,7 @@
+/**
+ * @class
+ * @memberof module:Errors
+ */
 class CleanerError extends Error {
     constructor(expression, pos, msg) {
         super(msg);

@@ -1,5 +1,15 @@
 "use strict";
-module.exports = function ltp(inputText) {
+/**
+ * @module Main
+ */
+
+ /**
+  * Converts a LaTeX expression into the syntax that the Photomath solver understands.
+  * Throws a user-friendly error in case the LaTeX expression is invalid.
+  * 
+  * @param {String} inputText Latex expression.
+  */
+function ltp(inputText) {
     let cleaner = require("./cleaner");
     let translator = require("./translator");
     let parser = require("./parser");
@@ -13,3 +23,5 @@ module.exports = function ltp(inputText) {
         console.log(err);
     }
 }
+
+module.exports = ltp;

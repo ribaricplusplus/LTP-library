@@ -14,72 +14,13 @@
         "\\theta":"θ"
     }
 
-    class LatexNode
-    {
-        constructor(type, arg)
-        {
-            this.arg = arg;
-            this.type = type;
-        }
-    }
-
-    /* Models all LaTeX functions: Trigonometric functions,
-    integrals, derivatives, fractions, etc.
-
-    Rule for naming functions:
-    The translator relies on the function name to apply the correct translation.
-    Therefore, the name assigned in the grammar and the name used in the 
-    "funcTranslations" object of the translator must correspond.
-    */
-    class LatexFunction extends LatexNode
-    {
-        /*  Parameters:
-                - name - name of the function
-                - arg - arguments of the function
-                - exponent - if defined, the function is in exponentiated form*/
-        constructor(name, arg, exponent){
-            super("function", arg);
-            this.name = name;
-            this.exponent = exponent;
-        }
-    }
-
-    /* Models expressions that require no manipulation before being passed
-    to the Solver, e.g. 2x+3 */
-    class LatexCalcunit extends LatexNode
-    {
-        constructor(arg)
-        {
-            super("calcunit", arg);
-        }
-    }
-
-    /* Models the most general LaTeX expression. arg is an array of all the
-    LaTeX expression units such as functions and calcunits. */
-    class LatexExpression extends LatexNode
-    {
-        constructor(arg, bracketType){
-            super("expression", arg);
-            this.bracketType = bracketType;
-        }
-    }
-
-    /* Models a literal character. */
-    class LatexCharacter extends LatexNode
-    {
-        constructor(arg){
-            super("char", arg);
-        }
-    }
-
-    class LatexEnvironment extends LatexNode
-    {
-        constructor(envType, arg)
-        {
-            super("environment", arg);
-            this.envType = envType;
-        }
-    }
+    let {
+    LatexNode,
+    LatexFunction,
+    LatexExpression,
+    LatexCalcunit,
+    LatexCharacter,
+    LatexEnvironment } = require("../src/types.js");
 }
 root
 = expressions:expression*{return new LatexNode("root", expressions)}
@@ -177,7 +118,6 @@ floating_argument
 absolute_value
 = '|' arg:floating_argument '|' {return new LatexFunction("abs", [arg]);}
 
-/* TO WRITE TRANSLATION FOR: */
 binomial
 = "\\displaystyle" _ "\\binom" n:argument k:argument {
     return new LatexFunction("binomial", [n, k]);

@@ -1,8 +1,7 @@
 "use strict";
 let bracketed = require("./bracketed.js");
-let CleanerError = require("./cleaner_error");
+let CleanerError = require("./errors/cleaner_error");
 /**
- * @class
  * 
  * Removes all semantically trivial LaTeX tokens such as textcolor.
  * 
@@ -11,6 +10,8 @@ let CleanerError = require("./cleaner_error");
  * 
  * Tokens that will be cleaned are defined by [runRegisteredCleaners]{@link Cleaner#runRegisteredCleaners}.
  * 
+ * @class
+ * @memberof module:Main
  */
 class Cleaner {
     constructor() {
