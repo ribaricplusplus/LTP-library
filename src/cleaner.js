@@ -1,88 +1,90 @@
 "use strict";
 let bracketed = require("./bracketed.js");
-/* The cleaner removes all LaTeX decorations from an expression that are
-semantically trivial.
-
-Some functionalities:
-    - Cleans \textcolor
-    - Cleans \cdot and \times
-    - Cleans \left and \right
-    - Cleans \text
-    - Cleans & (replace with whitespace)*/
-
-/* Print format is
-    message : context */
-class CleanerError extends Error {
-    constructor(expression, pos, msg) {
-        super(msg);
-        this.name = "CleanerError";
-        this.CONTEXT_LENGTH = 10; //Amount of characters to print if error occurrs
-        if (expression) {
-            let printStartPos = (pos + this.CONTEXT_LENGTH) > expression.length ? expression.length : pos + this.CONTEXT_LENGTH;
-            let context = expression.substr(pos, printStartPos);
-            this.message = msg + ":" + context;;
-        }
+let CleanerError = require("./cleaner_error");
+/**
+ * @class
+ * 
+ * Removes all semantically trivial LaTeX tokens such as textcolor.
+ * 
+ * The [clean]{@link Cleaner#clean} method is the main Cleaner method to call with
+ * the expression to clean.
+ * 
+ * Tokens that will be cleaned are defined by [runRegisteredCleaners]{@link Cleaner#runRegisteredCleaners}.
+ * 
+ */
+class Cleaner {
+    constructor() {
+        this.expression = "";
     }
-}
-
-let cleaner = {
-
+    
+    /**
+     * The main Cleaner method which takes a decorated LaTeX expression and
+     * returns it in the form ready for parsing.
+     * @param {String} expression LaTeX expression to clean.
+     * @returns {String} Cleaned expression ready for parsing.
+     */
     clean(expression) {
-        let startExp = expression;
-        expression = this.doCleaning(expression);
-        while (startExp != expression) {
-            startExp = expression;
-            expression = this.doCleaning(expression);
+        this.expression = expression;
+        return this.cleanRecursively();
+    }
+
+    cleanRecursively() {
+        let startExpression = this.expression;
+        this.runRegisteredCleaners();
+        /* As long as cleaning changes the expression, keep cleaning. */
+        while (startExpression != this.expression) {
+            startExpression = this.expression;
+            this.runRegisteredCleaners();
         }
-        return expression;
-    },
+        return this.expression;
+    }
 
-    doCleaning(expression) {
-        expression = this.cleanTextColor(expression);
-        expression = this.cleanOperators(expression);
-        expression = this.cleanLeftRight(expression);
-        expression = this.cleanText(expression);
-        expression = this.cleanThingies(expression);
-        return expression;
-    },
+    /**
+     * Invokes cleaner methods which define the tokens that are to be removed
+     * from the LaTeX expression.
+     */
+    runRegisteredCleaners() {
+         this.cleanTextColor();
+         this.convertOperators();
+         this.cleanLeftRight();
+         this.cleanText();
+         this.cleanThingies();
+    }
 
-    cleanTextColor(expression) {
-        return this.cleanArgumented(expression, "\\textcolor", 2, 2);
-    },
+    cleanTextColor() {
+        this.replaceFunctionWithParameter("\\textcolor", 2, 2);
+    }
 
-    cleanText(expression) {
-        return this.cleanArgumentedRemove(expression, "\\text", 1);
-    },
+    cleanText() {
+        this.cleanFunctionWithParameter("\\text", 1);
+    }
 
-    /* Replaces \left and \right */
-    cleanLeftRight(expression) {
+    cleanLeftRight() {
         let matchPattern = /(\\left)|(\\right)/gi;
-        return expression.replace(matchPattern, "");
-    },
+        this.expression = this.expression.replace(matchPattern, "");
+    }
 
-    /* Thingies:, e.g. [5pt] and & */
-    cleanThingies(expression) {
+    cleanThingies() {
         let matchPattern = /\[\d+?pt\]/gi
-        expression = expression.replace(matchPattern, "");
+        this.expression = this.expression.replace(matchPattern, "");
         matchPattern = "&";
-        expression = expression.replace(matchPattern, " ");
-        
+        this.expression = this.expression.replace(matchPattern, " ");
+    }
 
-        return expression;
-    },
-
-    /* Converts things such as \leq into actual operators */
-    cleanOperators(expression) {
+    /**
+     * Converts LaTeX operators into regular operators, e.g. \leq becomes <=.
+     */
+    convertOperators() {
         var matchPattern;
         /* Multiplication */
         matchPattern = /(\\cdot)|(\\times)/gi;
-        expression = expression.replace(matchPattern, "*");
+        this.expression = this.expression.replace(matchPattern, "*");
         /* Division */
         matchPattern = "\\div";
-        expression = expression.replace(matchPattern, "/");
+        this.expression = this.expression.replace(matchPattern, "/");
         /* Comparison */
         matchPattern = /(\\leq)|(\\lt)|(\\geq)|(\\gt)/gi
-        expression = expression.replace(matchPattern, (match) => {
+        this.expression = this.expression.replace(matchPattern, (match) => {
             switch (match){
                 case "\\leq":
                     return "<=";
@@ -94,13 +96,21 @@ let cleaner = {
                     return ">";
             }
         });
-        return expression;
-    },
+    }
 
-    /*  Removes [start, end) from expression, inserts the replacement at the removed part.
-        Return properties:
-            - expression - the new, modified expression
-            - replacementEndPos - index where replacement ends*/
+    /**
+     * Removes [start, end) from expression, inserts the replacement in place of the removed part.
+     * 
+     * @param {String} expression Input expression.
+     * @param {int} start Start index of the substring to remove.
+     * @param {int} end End index of the substring to remove, noninclusive.
+     * @param {String} replacement String to insert at start position.
+     * @returns {Object} Object with properties: <ul>
+     * <li><strong>expression</strong> - new expression</li>
+     * <li><strong>replacementEndPos</strong> - index where the replacement ends, inclusive</li></ul>
+     * 
+     *
+     */
     indexedReplacement(expression, start, end, replacement) {
         let expStart = expression.slice(0, start);
         let expEnd = expression.slice(end, expression.length);
@@ -111,73 +121,75 @@ let cleaner = {
             expression: newExp,
             replacementEndPos: newEnd
         };
-    },
-
-    /*  Cleans a function of the form \name{}{}{}{}... by replacing it with one of its arguments
-        Parameters:
-        - name - name of the function (must include \ if the function has it)
-        - x - the parameter whose value to take (1 indexed)
-        - n - the total number of parameters that the latex function takes
+    }
+   /**
+    * Replaces a function of the form name{}{}{} with one of its parameters.
+    * 
+    * @param {String} name Name of the function to replace. Must include \ explicitly.
+    * @param {int} x The parameter with which to replace the function. First parameter is 1.
+    * @param {int} n Total number of parameters that the function takes.
     */
-    cleanArgumented(expression, name, x, n) {
+    replaceFunctionWithParameter(name, x, n) {
         let matchPattern = name;
-        let startPos = expression.indexOf(matchPattern, 0);
+        let startPos = this.expression.indexOf(matchPattern, 0);
         while (startPos != -1) {
             let baseEndPos = startPos + (matchPattern.length - 1) //End of match pattern position (inclusive)
             let argStartPos = 0;
             //Ignore the first x-1 arguments (their end position is at baseEndPos)
             for (let i = 0; i < x - 1; ++i) {
-                argStartPos = expression.indexOf("{", baseEndPos);
+                argStartPos = this.expression.indexOf("{", baseEndPos);
                 if (argStartPos == -1) {
-                    throw new CleanerError(expression, startPos, "Missing arguments");
+                    throw new CleanerError(this.expression, startPos, "Missing arguments");
                 }
-                baseEndPos = bracketed.findEnd(expression, argStartPos);
+                baseEndPos = bracketed.findEnd(this.expression, argStartPos);
             }
             //Get the value of the xth argument
-            argStartPos = expression.indexOf("{", baseEndPos);
+            argStartPos = this.expression.indexOf("{", baseEndPos);
             if (argStartPos == -1) {
-                throw new CleanerError(expression, startPos, "Missing arguments");
+                throw new CleanerError(this.expression, startPos, "Missing arguments");
             }
-            let newValue = bracketed.get(expression, argStartPos);
-            baseEndPos = bracketed.findEnd(expression, argStartPos);
+            let newValue = bracketed.get(this.expression, argStartPos);
+            baseEndPos = bracketed.findEnd(this.expression, argStartPos);
 
             //Find the end of the function
             for (let i = x; i < n; ++i) {
-                argStartPos = expression.indexOf("{", baseEndPos);
+                argStartPos = this.expression.indexOf("{", baseEndPos);
                 if (argStartPos == -1) {
-                    throw new CleanerError(expression, startPos, "Missing arguments");
+                    throw new CleanerError(this.expression, startPos, "Missing arguments");
                 }
-                baseEndPos = bracketed.findEnd(expression, argStartPos);
+                baseEndPos = bracketed.findEnd(this.expression, argStartPos);
             }
             //Make the replacement
-            let replacementObj = this.indexedReplacement(expression, startPos, baseEndPos + 1, newValue);
-            expression = replacementObj.expression;
-            startPos = expression.indexOf(matchPattern, replacementObj.replacementEndPos);
+            let replacementObj = this.indexedReplacement(this.expression, startPos, baseEndPos + 1, newValue);
+            this.expression = replacementObj.expression;
+            startPos = this.expression.indexOf(matchPattern, replacementObj.replacementEndPos);
         }
-        return expression;
-    },
+    }
 
-    /* Works similar to cleanArgumented, except that it entirely removes a function
-    instead of replacing it with one of its arguments. */
-    cleanArgumentedRemove(expression, name, n) {
+    /**
+     * Removes a function of the form name{}{}{}. 
+     * 
+     * @param {String} name Name of the function to replace. Must include \ explicitly.
+     * @param {int} n Total number of parameters that the function takes.
+     */
+    cleanFunctionWithParameter(name, n) {
         let matchPattern = name;
-        let startPos = expression.indexOf(matchPattern, 0);
+        let startPos = this.expression.indexOf(matchPattern, 0);
         while (startPos != -1) {
             let baseEndPos = startPos + (matchPattern.length - 1);
             for (let i = 0; i < n; ++i) {
-                let argStartPos = expression.indexOf("{", baseEndPos);
+                let argStartPos = this.expression.indexOf("{", baseEndPos);
                 if (argStartPos == -1) {
-                    throw new CleanerError(expression, startPos, "Missing arguments");
+                    throw new CleanerError(this.expression, startPos, "Missing arguments");
                 }
-                baseEndPos = bracketed.findEnd(expression, argStartPos);
-                let replacementObj = this.indexedReplacement(expression, startPos, baseEndPos + 1, "");
-                expression = replacementObj.expression;
-                startPos = expression.indexOf(matchPattern, replacementObj.replacementEndPos);
+                baseEndPos = bracketed.findEnd(this.expression, argStartPos);
+                let replacementObj = this.indexedReplacement(this.expression, startPos, baseEndPos + 1, "");
+                this.expression = replacementObj.expression;
+                startPos = this.expression.indexOf(matchPattern, replacementObj.replacementEndPos);
             }
         }
-        return expression;
     }
 
 }
 
-module.exports = cleaner;
+module.exports = new Cleaner();
