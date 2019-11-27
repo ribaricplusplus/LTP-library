@@ -18,7 +18,7 @@ class Translator {
             abs: (funcObj) => `abs(${funcObj.arg[0]})`,
             sqrt: (funcObj) => {
                 if (funcObj.arg.length == 2) {
-                    return `root(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
+                    return `root(${funcObj.arg[0]},${funcObj.arg[1]})`;
                 }
 
                     return `root2(${funcObj.arg[0]})`;
@@ -28,7 +28,7 @@ class Translator {
                     return `integral(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
                 }
 
-                    return `definiteintegral(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]}, ${funcObj.arg[3]})`;
+                    return `definiteintegral(${funcObj.arg[0]},${funcObj.arg[1]},${funcObj.arg[2]},${funcObj.arg[3]})`;
             },
             fraction: (funcObj) => `{{${funcObj.arg[0]}}/{${funcObj.arg[1]}}}`,
 
@@ -36,12 +36,12 @@ class Translator {
 
             latex_function: (funcObj) => {
                 funcObj.arg[1] = bracketed.get(funcObj.arg[1]);
-                return `function(${funcObj.arg[0]}, ${funcObj.arg[1]})=${funcObj.arg[2]}`;
+                return `function(${funcObj.arg[0]},${funcObj.arg[1]})=${funcObj.arg[2]}`;
             },
 
             latex_function_inverse: (funcObj) => {
                 funcObj.arg[1] = bracketed.get(funcObj.arg[1]);
-                return `function_inverse(${funcObj.arg[0]}, ${funcObj.arg[1]})=${funcObj.arg[2]}`;
+                return `function_inverse(${funcObj.arg[0]},${funcObj.arg[1]})=${funcObj.arg[2]}`;
             },
 
             binomial: (funcObj) => `choose(${funcObj.arg.join(",")})`,
@@ -180,7 +180,9 @@ class Translator {
         for (let i = 0; i < funcObj.arg.length; ++i) {
             funcObj.arg[i] = this.translate(funcObj.arg[i]);
             if (funcObj.arg[i][0] == "{" || funcObj.arg[i][0] == "[") {
-                funcObj.arg[i] = bracketed.get(funcObj.arg[i]);
+                let bracketEndPos = bracketed.findEnd(funcObj.arg[i]);
+                funcObj.arg[i] = funcObj.arg[i].substring(1,bracketEndPos) +
+                funcObj.arg[i].substring(bracketEndPos+1, funcObj.arg[i].length);
             }
         }
         /* Translate (and take care of exponentiated form if present) */

@@ -42,7 +42,7 @@ test("Simple degrees of the form 5^{\\circ}", () => {
     expect(ltp(ltx.deg.input)).toBe(ltx.deg.expected);
 })
 
-test("Advanced degrees of the form 5x+23^\\circ", () => {
+test("Degrees of the form {5x+{23}}^{\\circ}", () => {
     expect(ltp(ltx.deg2.input)).toBe(ltx.deg2.expected);
 })
 

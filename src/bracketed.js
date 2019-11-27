@@ -16,25 +16,20 @@ class Bracketed {
      * Gets contents inside brackets maching given opening brace at pos.
      * For example, get("{hello}", 0) returns hello.
      * @param {String} expression Expression that contains an expression inside brackets.
-     * @param {int} pos Index of the opening brace.
+     * @param {Number} [pos=0] Index of the opening brace.
      * @returns {String} Expression inside brackets.
      */
-    get(expression, pos) {
-        if (!pos)
-        {
-            pos = 0;
-        }
+    get(expression, pos = 0) {
         return expression.substring(pos+1, this.findEnd(expression, pos));
     }
 
     /**
-     * 
      * @param {String} expression Expression that contains an expression inside brackets.
-     * @param {int} pos Index of the opening brace.
-     * @returns {int} Index of the closing brace matching the opening brace at pos.
+     * @param {Number} pos Index of the opening brace.
+     * @returns {Number} Index of the closing brace matching the opening brace at pos.
      * @throws {BracketedError}
      */
-    findEnd(expression, pos) {
+    findEnd(expression, pos = 0) {
         /*  Create a stack for brackets. Each time { is found, add it to the stack.
             Whenever } is found, pop one opening bracket from the stack.
             

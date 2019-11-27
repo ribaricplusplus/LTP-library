@@ -11,7 +11,7 @@ module.exports = {
 
     systemOfEquations:{
         input:String.raw`\begin{cases} 2x+3=7\\ 5+\log_2{x}x=16 \end{cases}`,
-        expected:"system(2x+3=7,5+log(2, x)x=16)"
+        expected:"system(2x+3=7,5+log(2,x)x=16)"
     },
 
     alignedSystemOfEquations:{
@@ -31,7 +31,7 @@ module.exports = {
 
     detWithLogarithm:{
         input:String.raw`\begin{bmatrix} \log_{2}{3} & -3 \\ -1 & 0 \end{bmatrix}`,
-        expected:"det(log(2, 3),-3,-1,0)"
+        expected:"det2(log(2,3),-3,-1,0)"
     },
 
     sqrt:{
@@ -46,7 +46,7 @@ module.exports = {
 
     integral:{
         input:String.raw`\displaystyle\int_a^b{\frac{1}{2}x^2+3}dx`,
-        expected:"definiteintegral(a, b, {{1}/{2}}x^2+3, x)"
+        expected:"definiteintegral(a,b,{{1}/{2}}x^2+3,x)"
     },
 
     ln:{
@@ -61,7 +61,7 @@ module.exports = {
 
     trig:{
         input:String.raw`\sin{\frac{1}{2}}+\tan{\frac{1}{2}}+\tg{\frac{1}{2}}+\cos{\frac{1}{2}}`,
-        expected:"sin({{1}/{2}})+tan({{1}/{2}})+tan({{1}/{2}})+cos({{1}/{2}})"
+        expected:"sin({{1}/{2}})+tan({{1}/{2}})+tg({{1}/{2}})+cos({{1}/{2}})"
     },
 
     deg:{
@@ -70,17 +70,17 @@ module.exports = {
     },
 
     deg2:{
-        input:String.raw`\sin{5x+23^\circ}`,
-        expected:"sin(5x+deg(23)"
+        input:String.raw`\sin{{5x+{23}}^{\circ}}`,
+        expected:"sin(deg(5x+{23}))"
     },
 
     latex_function:{
         input:String.raw`f(x)=\frac{1}{2}x+3`,
-        expected:"function(f,x)={{1}/{2}}x+3"
+        expected:"function(f,x)={1}/{2}x+3"
     },
 
     latex_function_inverse:{
         input:String.raw`f^{-1}(x)=\frac{1}{2}x+3`,
-        expected:"function_inverse(f,x)={{1}/{2}}x+3"
+        expected:"function_inverse(f,x)={1}/{2}x+3"
     },
 }

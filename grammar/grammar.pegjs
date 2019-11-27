@@ -70,7 +70,7 @@ unit
 }
 
 degrees
-= arg:number _ "^" _ "{" _ "\\circ" _ "}" {
+= arg:number _ "^" _ "{"? _ "\\circ" _ "}"? {
     return new LatexFunction("degrees", [arg]);
 } /
 arg:argument  "^" _ "{"? _ "\\circ" _ "}"? {
@@ -135,7 +135,7 @@ logarithm
     return new LatexFunction("logarithm", [base, arg]);
 }
 / "\\ln" arg:argument {
-    return new LatexFunction("logarithm_ln" [arg])
+    return new LatexFunction("logarithm_ln", [arg])
 }
 / exponentiated_logarithm
 
@@ -161,12 +161,12 @@ limit
 }
 
 limit_specifier
-= "{" _ opvar1:operational_variable _ ("\\longrightarrow" | "\\to") _ opvar2:operational_variable _ "}" {
+= "{" _ opvar1:operational_variable _ ("\\longrightarrow" / "\\to") _ opvar2:operational_variable _ "}" {
     return [opvar1, opvar2];
 }
 
 latex_function
-= name:function_letter _ input:expression_round_bracketed "=" arg:floating_argument {
+= name:function_letter _ input:expression_round_bracketed _ "=" _ arg:floating_argument {
     return new LatexFunction("latex_function", [name, input, arg])
 }
 
