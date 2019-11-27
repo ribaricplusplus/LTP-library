@@ -1,14 +1,14 @@
-let bracketed = require("./bracketed.js");
-let CleanerError = require("./errors/cleaner_error");
+const bracketed = require("./bracketed.js");
+const CleanerError = require("./errors/cleaner_error");
 /**
- * 
+ *
  * Removes all semantically trivial LaTeX tokens such as textcolor.
- * 
+ *
  * The [clean]{@link Cleaner#clean} method is the main Cleaner method to call with
  * the expression to clean.
- * 
+ *
  * Tokens that will be cleaned are defined by [runRegisteredCleaners]{@link Cleaner#runRegisteredCleaners}.
- * 
+ *
  * @class
  * @memberof module:Main
  */
@@ -16,7 +16,7 @@ class Cleaner {
     constructor() {
         this.expression = "";
     }
-    
+
     /**
      * The main Cleaner method which takes a decorated LaTeX expression and
      * returns it in the form ready for parsing.
@@ -62,12 +62,12 @@ class Cleaner {
     }
 
     cleanLeftRight() {
-        let matchPattern = /(\\left)|(\\right)/gi;
+        const matchPattern = /(\\left)|(\\right)/gi;
         this.expression = this.expression.replace(matchPattern, "");
     }
 
     cleanSpacing() {
-        let matchPattern = /\[\d+?pt\]/gi
+        const matchPattern = /\[\d+?pt\]/gi;
         this.expression = this.expression.replace(matchPattern, "");
     }
 
@@ -75,24 +75,24 @@ class Cleaner {
      * The ampersand (&) gets very special treatment because it has meaning within matrices (as a separator),
      * and should be removed in all other cases.
      * */
-    cleanAmpersand(){
-        let matchPattern = /\\begin\s*?{\s*?(?:bmatrix|vmatrix)\s*}(?:.|\r|\n)*?\\end\s*{\s*?(?:bmatrix|vmatrix)\s*?}/gi
-        let matches = this.expression.matchAll(matchPattern);
-        for(let match of matches) {
-            let matchStartPos = match.index;;
-            let matchEndPos = matchStartPos+match[0].length;
+    cleanAmpersand() {
+        const matchPattern = /\\begin\s*?{\s*?(?:bmatrix|vmatrix)\s*}(?:.|\r|\n)*?\\end\s*{\s*?(?:bmatrix|vmatrix)\s*?}/gi;
+        const matches = this.expression.matchAll(matchPattern);
+        for (const match of matches) {
+            const matchStartPos = match.index;
+            const matchEndPos = matchStartPos + match[0].length;
             let left = this.expression.substring(0, matchStartPos);
-            let between = this.expression.substring(matchStartPos, matchEndPos);
+            const between = this.expression.substring(matchStartPos, matchEndPos);
             let right = this.expression.substring(matchEndPos, this.expression.length);
             left = left.replace("&", " ");
             right = right.replace("&", " ");
-            this.expression = left+between+right;
+            this.expression = left + between + right;
         }
     }
 
-    /** Cleans decorative characters that need to be removed entirely (instead of being replaced by something).*/
-    cleanByRemoval(){
-        let matchPattern = ",";
+    /** Cleans decorative characters that need to be removed entirely (instead of being replaced by something). */
+    cleanByRemoval() {
+        const matchPattern = ",";
         this.expression = this.expression.replace(matchPattern, "");
     }
 
@@ -100,7 +100,7 @@ class Cleaner {
      * Converts LaTeX operators into regular operators, e.g. \leq becomes <=.
      */
     convertOperators() {
-        var matchPattern;
+        let matchPattern;
         /* Multiplication */
         matchPattern = /(\\cdot)|(\\times)/gi;
         this.expression = this.expression.replace(matchPattern, "*");
@@ -108,9 +108,9 @@ class Cleaner {
         matchPattern = "\\div";
         this.expression = this.expression.replace(matchPattern, "/");
         /* Comparison */
-        matchPattern = /(\\leq)|(\\lt)|(\\geq)|(\\gt)/gi
+        matchPattern = /(\\leq)|(\\lt)|(\\geq)|(\\gt)/gi;
         this.expression = this.expression.replace(matchPattern, (match) => {
-            switch (match){
+            switch (match) {
                 case "\\leq":
                     return "<=";
                 case "\\lt":
@@ -119,13 +119,15 @@ class Cleaner {
                     return ">=";
                 case "\\gt":
                     return ">";
+                default:
+                    throw new CleanerError(undefined, undefined, "Unexpected inequality symbol match.");
             }
         });
     }
 
     /**
      * Removes [start, end) from expression, inserts the replacement in place of the removed part.
-     * 
+     *
      * @param {String} expression Input expression.
      * @param {int} start Start index of the substring to remove.
      * @param {int} end End index of the substring to remove, noninclusive.
@@ -133,34 +135,35 @@ class Cleaner {
      * @returns {Object} Object with properties: <ul>
      * <li><strong>expression</strong> - new expression</li>
      * <li><strong>replacementEndPos</strong> - index where the replacement ends, inclusive</li></ul>
-     * 
+     *
      *
      */
     indexedReplacement(expression, start, end, replacement) {
-        let expStart = expression.slice(0, start);
-        let expEnd = expression.slice(end, expression.length);
-        let halfNewExp = expStart + replacement;
-        let newEnd = halfNewExp.length - 1;
-        let newExp = halfNewExp + expEnd;
+        const expStart = expression.slice(0, start);
+        const expEnd = expression.slice(end, expression.length);
+        const halfNewExp = expStart + replacement;
+        const newEnd = halfNewExp.length - 1;
+        const newExp = halfNewExp + expEnd;
         return {
             expression: newExp,
-            replacementEndPos: newEnd
+            replacementEndPos: newEnd,
         };
     }
+
    /**
     * Replaces a function of the form name{}{}{} with one of its parameters.
-    * 
+    *
     * @param {String} name Name of the function to replace. Must include \ explicitly.
     * @param {int} x The parameter with which to replace the function. First parameter is 1.
     * @param {int} n Total number of parameters that the function takes.
     */
     replaceFunctionWithParameter(name, x, n) {
-        let matchPattern = name;
+        const matchPattern = name;
         let startPos = this.expression.indexOf(matchPattern, 0);
         while (startPos != -1) {
-            let baseEndPos = startPos + (matchPattern.length - 1) //End of match pattern position (inclusive)
+            let baseEndPos = startPos + (matchPattern.length - 1); // End of match pattern position (inclusive)
             let argStartPos = 0;
-            //Ignore the first x-1 arguments (their end position is at baseEndPos)
+            // Ignore the first x-1 arguments (their end position is at baseEndPos)
             for (let i = 0; i < x - 1; ++i) {
                 argStartPos = this.expression.indexOf("{", baseEndPos);
                 if (argStartPos == -1) {
@@ -168,15 +171,15 @@ class Cleaner {
                 }
                 baseEndPos = bracketed.findEnd(this.expression, argStartPos);
             }
-            //Get the value of the xth argument
+            // Get the value of the xth argument
             argStartPos = this.expression.indexOf("{", baseEndPos);
             if (argStartPos == -1) {
                 throw new CleanerError(this.expression, startPos, "Missing arguments");
             }
-            let newValue = bracketed.get(this.expression, argStartPos);
+            const newValue = bracketed.get(this.expression, argStartPos);
             baseEndPos = bracketed.findEnd(this.expression, argStartPos);
 
-            //Find the end of the function
+            // Find the end of the function
             for (let i = x; i < n; ++i) {
                 argStartPos = this.expression.indexOf("{", baseEndPos);
                 if (argStartPos == -1) {
@@ -184,37 +187,36 @@ class Cleaner {
                 }
                 baseEndPos = bracketed.findEnd(this.expression, argStartPos);
             }
-            //Make the replacement
-            let replacementObj = this.indexedReplacement(this.expression, startPos, baseEndPos + 1, newValue);
+            // Make the replacement
+            const replacementObj = this.indexedReplacement(this.expression, startPos, baseEndPos + 1, newValue);
             this.expression = replacementObj.expression;
             startPos = this.expression.indexOf(matchPattern, replacementObj.replacementEndPos);
         }
     }
 
     /**
-     * Removes a function of the form name{}{}{}. 
-     * 
+     * Removes a function of the form name{}{}{}.
+     *
      * @param {String} name Name of the function to replace. Must include \ explicitly.
      * @param {int} n Total number of parameters that the function takes.
      */
     cleanFunctionWithParameter(name, n) {
-        let matchPattern = name;
+        const matchPattern = name;
         let startPos = this.expression.indexOf(matchPattern, 0);
         while (startPos != -1) {
             let baseEndPos = startPos + (matchPattern.length - 1);
             for (let i = 0; i < n; ++i) {
-                let argStartPos = this.expression.indexOf("{", baseEndPos);
+                const argStartPos = this.expression.indexOf("{", baseEndPos);
                 if (argStartPos == -1) {
                     throw new CleanerError(this.expression, startPos, "Missing arguments");
                 }
                 baseEndPos = bracketed.findEnd(this.expression, argStartPos);
-                let replacementObj = this.indexedReplacement(this.expression, startPos, baseEndPos + 1, "");
+                const replacementObj = this.indexedReplacement(this.expression, startPos, baseEndPos + 1, "");
                 this.expression = replacementObj.expression;
                 startPos = this.expression.indexOf(matchPattern, replacementObj.replacementEndPos);
             }
         }
     }
-
 }
 
 module.exports = new Cleaner();

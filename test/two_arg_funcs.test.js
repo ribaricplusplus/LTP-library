@@ -5,3 +5,7 @@ test("Basic fraction", () => {
     console.log(ltp);
     expect(ltp(ltx.fraction.input)).toBe(ltx.fraction.expected);
 })
+
+test("Square root", () => {
+    
+})

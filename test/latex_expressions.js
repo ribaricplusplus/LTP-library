@@ -28,4 +28,8 @@ module.exports = {
         input:String.raw`\begin{bmatrix} 5 & -3 \\ -1 & 0 \end{bmatrix}`,
         expected:"det2(5,-3,-1,0)"
     },
+
+    detWithLogarithm:{
+        input:String.raw`\begin{bmatrix} \log_{2}{3} & -3 \\ -1 & 0 \end{bmatrix}`
+    },
 }

@@ -9,9 +9,9 @@
  */
 
 /**
- * 
+ *
  * Generic LaTeX node.
- * 
+ *
  * Every other node in the parse tree must also be a LatexNode. Thus, each node
  * has a defined type and arguments.
  * @class
@@ -37,9 +37,9 @@ class LatexFunction extends LatexNode {
      * Rule for naming functions in the grammar:
      * [Translator]{@link Translator} relies on the function name to apply the
      * correct translation. Therefore, the name assigned in the grammar and the name
-     * used in [funcTranslations]{@link Translator#funcTranslations} must correspond. 
+     * used in [funcTranslations]{@link Translator#funcTranslations} must correspond.
      * @param {String} name Name of the function. (e.g., the name for \sin is sin).
-     * @param {Array<LatexNode>} arg Contents of the function. 
+     * @param {Array<LatexNode>} arg Contents of the function.
      * @param {LatexNode} [exponent] The exponent in the syntax \name^{exponent}{}{}.
      */
     constructor(name, arg, exponent) {
@@ -50,7 +50,7 @@ class LatexFunction extends LatexNode {
 }
 
 /**
- * 
+ *
  * Node whose contents require no manipulation before being passed to the solver, e.g. 2x+3.
  * @class
  */
@@ -65,7 +65,7 @@ class LatexCalcunit extends LatexNode {
 }
 
 /**
- * 
+ *
  * General expression which consists of several functions, calcunits or environments.
  * @class
  */
@@ -95,9 +95,9 @@ class LatexCharacter extends LatexNode {
  */
 class LatexEnvironment extends LatexNode {
     /**
-     * 
+     *
      * @param {String} envType Environment type (system of equations, determinant...).
-     * @param {Array<LatexExpression>} arg Expressions contained within the environment. 
+     * @param {Array<LatexExpression>} arg Expressions contained within the environment.
      */
     constructor(envType, arg) {
         super("environment", arg);
@@ -111,5 +111,5 @@ module.exports = {
     LatexExpression,
     LatexCalcunit,
     LatexCharacter,
-    LatexEnvironment
-}
+    LatexEnvironment,
+};

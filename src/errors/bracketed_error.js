@@ -33,3 +33,5 @@ class BracketedError extends Error {
         }
     }
 }
+
+module.exports = BracketedError;

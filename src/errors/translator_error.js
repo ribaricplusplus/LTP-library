@@ -9,3 +9,5 @@ class TranslatorError extends Error {
         this.problem = problem;
     }
 }
+
+module.exports = TranslatorError;

@@ -1,10 +1,10 @@
-let bracketed = require("./bracketed.js");
-let TranslatorError = require("./errors/translator_error");
+const bracketed = require("./bracketed.js");
+const TranslatorError = require("./errors/translator_error");
 /**
  * Class with methods that convert parsed LaTeX into the solver syntax.
- * 
+ *
  * [translate]{@link Translator#translate} is the main method.
- * 
+ *
  * @class
  * @memberof module:Main
  */
@@ -14,35 +14,25 @@ class Translator {
          * Methods that define the translation of specific LaTeX functions.
          */
         this.funcTranslations = {
-            regular: (funcObj) => {
-                return `${funcObj.arg[0]}(${funcObj.arg[1]})`;
-            },
-            abs: (funcObj) => {
-                return `abs(${funcObj.arg[0]})`;
-            },
+            regular: (funcObj) => `${funcObj.arg[0]}(${funcObj.arg[1]})`,
+            abs: (funcObj) => `abs(${funcObj.arg[0]})`,
             sqrt: (funcObj) => {
                 if (funcObj.arg.length == 2) {
                     return `root(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
                 }
-                else {
+
                     return `root2(${funcObj.arg[0]})`;
-                }
             },
             integral: (funcObj) => {
                 if (funcObj.arg.length == 2) {
                     return `integral(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
                 }
-                else {
-                    return `definiteintegral(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]}, ${funcObj.arg[3]})`;
-                }
-            },
-            fraction: (funcObj) => {
-                return `{{${funcObj.arg[0]}}/{${funcObj.arg[1]}}}`;
-            },
 
-            derivative: (funcObj) => {
-                return `derivation(${funcObj.arg[1]}, ${funcObj.arg[2]})`;
+                    return `definiteintegral(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]}, ${funcObj.arg[3]})`;
             },
+            fraction: (funcObj) => `{{${funcObj.arg[0]}}/{${funcObj.arg[1]}}}`,
+
+            derivative: (funcObj) => `derivation(${funcObj.arg[1]}, ${funcObj.arg[2]})`,
 
             latex_function: (funcObj) => {
                 funcObj.arg[1] = bracketed.get(funcObj.arg[1]);
@@ -54,45 +44,31 @@ class Translator {
                 return `function_inverse(${funcObj.arg[0]}, ${funcObj.arg[1]})=${funcObj.arg[2]}`;
             },
 
-            binomial: (funcObj) => {
-                return `choose(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
-            },
+            binomial: (funcObj) => `choose(${funcObj.arg[0]}, ${funcObj.arg[1]})`,
 
-            logarithm: (funcObj) => {
-                return `log(${funcObj.arg[0]}, ${funcObj.arg[1]})`;
-            },
+            logarithm: (funcObj) => `log(${funcObj.arg[0]}, ${funcObj.arg[1]})`,
 
-            logarithm_10: (funcObj) => {
-                return `log10(${funcObj.arg[0]})`;
-            },
+            logarithm_10: (funcObj) => `log10(${funcObj.arg[0]})`,
 
-            logarithm_ln: (funcObj) => {
-                return `ln(${funcObj.arg[0]})`;
-            },
+            logarithm_ln: (funcObj) => `ln(${funcObj.arg[0]})`,
 
-            limit: (funcObj) => {
-                return `lim(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]})`;
-            },
+            limit: (funcObj) => `lim(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]})`,
 
-            mean: (funcObj) => {
-                return `mean(${funcObj.arg[0]})`;
-            },
+            mean: (funcObj) => `mean(${funcObj.arg[0]})`,
 
-            degrees: (funcObj) => {
-                return `deg(${funcObj.arg[0]})`;
-            }
-        }
+            degrees: (funcObj) => `deg(${funcObj.arg[0]})`,
+        };
     }
 
     /**
      * Translates given LatexNode into solver syntax by calling other helper methods
      * based on the LatexNode type.
-     * 
+     *
      * @param {LatexNode} node The node to translate.
      * @returns {String} Representation of the LatexNode in solver syntax.
      */
     translate(node) {
-        var result;
+        let result;
         switch (node.type) {
             case "root":
                 result = this.translateRoot(node);
@@ -112,7 +88,7 @@ class Translator {
             case "char":
                 result = this.translateChar(node);
                 break;
-            default: //Unknown type
+            default: // Unknown type
                 throw new TranslatorError(node);
         }
         return result;
@@ -122,8 +98,8 @@ class Translator {
      * @param {LatexNode} rootObj Root object to translate.
      */
     translateRoot(rootObj) {
-        var result = "";
-        for (let exp of rootObj.arg) {
+        let result = "";
+        for (const exp of rootObj.arg) {
             result += this.translateExpression(exp);
         }
         return result;
@@ -133,9 +109,9 @@ class Translator {
      * @param {LatexExpression} expressionObj Expression object to translate.
      */
     translateExpression(expressionObj) {
-        var result;
-        var openingBrace;
-        var closingBrace;
+        let result;
+        let openingBrace;
+        let closingBrace;
         switch (expressionObj.bracketType) {
             case "curly":
                 openingBrace = "{";
@@ -154,31 +130,31 @@ class Translator {
                 closingBrace = "";
         }
         result = openingBrace;
-        for (let arg of expressionObj.arg) {
+        for (const arg of expressionObj.arg) {
             switch (arg.type) {
                 case "root":
-                    result = result + this.translateRoot(arg);
+                    result += this.translateRoot(arg);
                     break;
                 case "environment":
-                    result = result + this.translateEnvironment(arg);
+                    result += this.translateEnvironment(arg);
                     break;
                 case "expression":
-                    result = result + this.translateExpression(arg);
+                    result += this.translateExpression(arg);
                     break;
                 case "function":
-                    result = result + this.translateFunction(arg);
+                    result += this.translateFunction(arg);
                     break;
                 case "calcunit":
-                    result = result + this.translateCalcunit(arg);
+                    result += this.translateCalcunit(arg);
                     break;
                 case "char":
-                    result = result + arg.arg;
+                    result += arg.arg;
                     break;
-                default: //Unknown type
+                default: // Unknown type
                     throw new TranslatorError(arg);
             }
         }
-        result = result + closingBrace;
+        result += closingBrace;
         return result;
     }
 
@@ -198,8 +174,8 @@ class Translator {
      * @param {LatexFunction} funcObj Function object to translate.
      */
     translateFunction(funcObj) {
-        let name = funcObj.name;
-        let translatingFunction = this.funcTranslations[name];
+        const { name } = funcObj;
+        const translatingFunction = this.funcTranslations[name];
         /* Translate arguments */
         for (let i = 0; i < funcObj.arg.length; ++i) {
             funcObj.arg[i] = this.translate(funcObj.arg[i]);
@@ -209,19 +185,18 @@ class Translator {
         }
         /* Translate (and take care of exponentiated form if present) */
         if (funcObj.exponent) {
-            return "{" + translatingFunction(funcObj) + "}^" + this.translate(funcObj.exponent);
+            return `{${translatingFunction(funcObj)}}^${this.translate(funcObj.exponent)}`;
         }
-        else {
+
             return translatingFunction(funcObj);
-        }
     }
 
     /**
      * @param {LatexCalcunit} calcunitObj Calcunit object to translate.
      */
     translateCalcunit(calcunitObj) {
-        var result = "";
-        for (let arg of calcunitObj.arg) {
+        let result = "";
+        for (const arg of calcunitObj.arg) {
             result += this.translateChar(arg);
         }
         return result;
@@ -234,7 +209,7 @@ class Translator {
      * @param {LatexEnvironment} envObj The environment to translate.
      */
     translateEnvironment(envObj) {
-        var result;
+        let result;
         switch (envObj.envType) {
             case "system":
                 result = this.translateEnvironmentSystem(envObj);
@@ -243,7 +218,7 @@ class Translator {
             case "det3":
                 result = this.translateEnvironmentDeterminant(envObj);
                 break;
-            default: //Unknown environment type
+            default: // Unknown environment type
                 throw new TranslatorError(envObj);
         }
         return result;
@@ -254,11 +229,11 @@ class Translator {
      * @param {LatexEnvironment} systemEnvObj Latex environment with envType = system.
      */
     translateEnvironmentSystem(systemEnvObj) {
-        let translatedArgs = [];
-        for (let arg of systemEnvObj.arg) {
+        const translatedArgs = [];
+        for (const arg of systemEnvObj.arg) {
             translatedArgs.push(this.translate(arg));
         }
-        return "system(" + translatedArgs.join(',') + ")";
+        return `system(${translatedArgs.join(',')})`;
     }
 
     /**
@@ -266,8 +241,8 @@ class Translator {
      * @param {LatexEnvironment} detObj Matrix to find the determinant of.
      */
     translateEnvironmentDeterminant(detObj) {
-        let translatedArgs = [];
-        for (let arg of detObj.arg) {
+        const translatedArgs = [];
+        for (const arg of detObj.arg) {
             translatedArgs.push(this.translate(arg));
         }
         let len;
@@ -276,10 +251,11 @@ class Translator {
                 break;
             case 9: len = "3";
                 break;
+            default:
+                throw new TranslatorError(detObj);
         }
-        return "det" + len + "(" + translatedArgs.join(',') + ")";
+        return `det${len}(${translatedArgs.join(',')})`;
     }
-
-};
+}
 
 module.exports = new Translator();
