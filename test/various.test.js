@@ -1,4 +1,4 @@
-let ltp = require("ltp");
+let ltp = require("latex-to-photomath");
 let ltx = require("./latex_expressions");
 
 

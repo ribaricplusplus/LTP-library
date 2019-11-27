@@ -1,24 +1,24 @@
 How to install
 =============================
-To make the installation as simple as possible, LTP is packaged with webpack
+To make the installation as simple as possible, Latex to Photomath (LTP) is packaged
 by the Unified Model Definition (UMD). Thereby, it can be integrated just like any other
 UMD package.
 
 Method 1 - Install as node module 
 ----------------------------
 
-1. Download the tarball file from google drive: link
-2. Run `npm install path/to/ltp-1.0.0.tgz --production`
+1. Download the tarball file from google drive: [link](https://drive.google.com/file/d/1Qe_AOLkT_ZhNX5h2U08eU8OAO-hQiiJw)
+2. Run `npm install path/to/latex-to-photomath-1.0.0.tgz`
 3. LTP can now be accessed as
-        const ltp = require("ltp");
+        const latexToPhotomath = require("latex-to-photomath");
 
 Method 2 - Install by direct loading
 ----------------------------
 
-1. Download the bundle from google drive: link
-2. Load the script into the site:
+1. Download the bundle from google drive: [link](https://drive.google.com/open?id=1pDHNjFIPn6femwcTkyusV1xoVCZFmHT3)
+2. Load the bundle into the site:
         <script src="ltp.js"></script>
-3. The ltp function becomes available globally.
+3. The latexToPhotomath function becomes available globally.
 
 How to use
 ==============================
@@ -26,7 +26,7 @@ Run the input to Solver through LTP before passing it forwards.
 LTP comes with good error reporting which can be output to the user by printing the error object's message.  
 The implementation code should look something like this:
     try{
-        inputForSolver = ltp(inputFromUser);
+        inputForSolver = latexToPhotomath(inputFromUser);
     } catch (err) {
         if (err.name === "LtpError")
         {
@@ -44,6 +44,7 @@ The general overview of how a new LaTeX function "\myLatexFunc{a}" would be impl
 1. Add "myLatexFunc" to one-argument functions in the grammar.
 2. Write a "myLatexFunc" translator method that looks something like this:
         myfunc: (functionObject) => "mySolverFunc(" + functionObject.arg + ")";
+
 
 Notes for the end user (who inputs LaTeX to CMS)
 ===========================

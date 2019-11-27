@@ -16,15 +16,14 @@ const LtpError = require("./errors/ltp_error");
  * @throws {LtpError} User-friendly error message in err.message. Identify by err.name = "LtpError".
  */
 function ltp(inputText) {
-    let cleaned; let parsed; let
-        translated;
+    let cleaned, parsed, translated;
     try {
         cleaned = cleaner.clean(inputText);
         parsed = parser.parse(cleaned);
         translated = translator.translate(parsed);
         return translated;
     } catch (err) {
-        throw new LtpError(err);
+        throw new LtpError(err, inputText);
     }
 }
 

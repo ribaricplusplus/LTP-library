@@ -5,7 +5,7 @@ module.exports = {
     output:{
         path: path.resolve(__dirname, 'dist'),
         filename:"ltp.js",
-        library:"ltp",
+        library:"latexToPhotomath",
         libraryTarget:"umd"
     },
     entry:"./src/ltp.js"

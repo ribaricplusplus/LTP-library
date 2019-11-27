@@ -1,8 +1,9 @@
 {
-  "name": "ltp",
+  "name": "latex-to-photomath",
   "version": "1.0.0",
   "description": "Translates LaTeX to Photomath solver syntax",
-  "main": "./src/ltp.js",
+  "main": "./dist/ltp.js",
+  "files": ["/dist"],
   "scripts": {
     "test": "jest"
   },
