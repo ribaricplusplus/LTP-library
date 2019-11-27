@@ -10,7 +10,9 @@ class LtpError{
      * @param {Error} err Any error that was thrown within LTP library.
      */
     constructor(err, inputText){
-        /** Error representing what exactly happened within LTP. */
+        /** Error representing what exactly happened within LTP. 
+         * @type {Error}
+        */
         this.cause = err;
         if (["CleanerError", "BracketedError", "SyntaxError"].includes(err.name)) {
             if (err.name == "SyntaxError") {
@@ -22,7 +24,15 @@ class LtpError{
         } else {
             err.message = `Error.`
         }
+        /**
+         * User-friendly error message.
+         * @type {String}
+         */
         this.message = err.message;
+        /**
+         * Error identifier
+         * @type {String}
+         */
         this.name = "LtpError";
     }
 }
