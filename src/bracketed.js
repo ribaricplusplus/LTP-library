@@ -1,6 +1,6 @@
 let BracketedError = require("./errors/bracketed_error");
 /**
- * Manipulates expressions in brackets. Throws a [BracketedError]{@link BracketedError} for missing/invalid bracket pairs.
+ * Manipulates expressions in brackets. Throws a [BracketedError]{@link Errors:BracketedError} for missing/invalid bracket pairs.
  * @class
  * @memberof module:Main
  */

@@ -3,7 +3,7 @@
  * This greatly eases how LaTeX expressions can be handled programmatically.<br>
  * <br>
  * As an example, suppose that a fraction written in LaTeX need be evaluated.
- * By modeling the fraction as a [LatexFunction]{@link Types:LatexFunction}
+ * By modeling the fraction as a [LatexFunction]{@link module:Types.LatexFunction}
  * object, its value can be calculated as frac.arg[0] / frac.arg[1].
  * @module Types
  */
@@ -35,9 +35,9 @@ class LatexNode {
 class LatexFunction extends LatexNode {
     /**
      * Rule for naming functions in the grammar:
-     * [Translator]{@link Translator} relies on the function name to apply the
+     * [Translator]{@link module:Main.Translator} relies on the function name to apply the
      * correct translation. Therefore, the name assigned in the grammar and the name
-     * used in [funcTranslations]{@link Translator#funcTranslations} must correspond.
+     * used in [funcTranslations]{@link module:Main.Translator#funcTranslations} must correspond.
      * @param {String} name Name of the function. (e.g., the name for \sin is sin).
      * @param {Array<LatexNode>} arg Contents of the function.
      * @param {LatexNode} [exponent] The exponent in the syntax \name^{exponent}{}{}.

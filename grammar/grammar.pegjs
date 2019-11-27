@@ -161,7 +161,7 @@ limit
 }
 
 limit_specifier
-= "{" _ opvar1:operational_variable _ "\\longrightarrow" _ opvar2:operational_variable _ "}" {
+= "{" _ opvar1:operational_variable _ ("\\longrightarrow" | "\\to") _ opvar2:operational_variable _ "}" {
     return [opvar1, opvar2];
 }
 
@@ -222,7 +222,8 @@ registered_regular_function
 / "arccos"
 / "arcctg"
 / "arccot"
-/ "arctan") {
+/ "arctan"
+/ "tg") {
     return new LatexCharacter(name);
 }
 

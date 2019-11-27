@@ -3,7 +3,7 @@ const TranslatorError = require("./errors/translator_error");
 /**
  * Class with methods that convert parsed LaTeX into the solver syntax.
  *
- * [translate]{@link Translator#translate} is the main method.
+ * The main entry method is [translate]{@link module:Main.Translator#translate}.
  *
  * @class
  * @memberof module:Main
@@ -44,15 +44,15 @@ class Translator {
                 return `function_inverse(${funcObj.arg[0]}, ${funcObj.arg[1]})=${funcObj.arg[2]}`;
             },
 
-            binomial: (funcObj) => `choose(${funcObj.arg[0]}, ${funcObj.arg[1]})`,
+            binomial: (funcObj) => `choose(${funcObj.arg.join(",")})`,
 
-            logarithm: (funcObj) => `log(${funcObj.arg[0]}, ${funcObj.arg[1]})`,
+            logarithm: (funcObj) => `log(${funcObj.arg.join(",")})`,
 
             logarithm_10: (funcObj) => `log10(${funcObj.arg[0]})`,
 
             logarithm_ln: (funcObj) => `ln(${funcObj.arg[0]})`,
 
-            limit: (funcObj) => `lim(${funcObj.arg[0]}, ${funcObj.arg[1]}, ${funcObj.arg[2]})`,
+            limit: (funcObj) => `lim(${funcObj.arg.join(',')})`,
 
             mean: (funcObj) => `mean(${funcObj.arg[0]})`,
 
@@ -168,7 +168,7 @@ class Translator {
     /**
      * Translates latex functions, such as \fract{1}{2}.<br><br>
      * To define a new translation, create a translating method
-     * in [funcTranslations]{@link Translator#funcTranslations}.
+     * in [funcTranslations]{@link module:Main.Translator#funcTranslations}.
      * <strong>Important note: </strong> The name of the method must match the name of the
      * function.
      * @param {LatexFunction} funcObj Function object to translate.

@@ -4,10 +4,10 @@ const CleanerError = require("./errors/cleaner_error");
  *
  * Removes all semantically trivial LaTeX tokens such as textcolor.
  *
- * The [clean]{@link Cleaner#clean} method is the main Cleaner method to call with
+ * The [clean]{@link module:Main.Cleaner#clean} method is the main Cleaner method to call with
  * the expression to clean.
  *
- * Tokens that will be cleaned are defined by [runRegisteredCleaners]{@link Cleaner#runRegisteredCleaners}.
+ * Tokens that will be cleaned are defined by [runRegisteredCleaners]{@link module:Main.Cleaner#runRegisteredCleaners}.
  *
  * @class
  * @memberof module:Main

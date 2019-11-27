@@ -10,8 +10,7 @@ class BracketedError extends Error {
      * about where the error occurred. 
      * 
      * For a generic unknown error, expression may be undefined.
-     * 
-     * @constructor
+
      * @param {String} expression Expression where the error occurred. No context in message if undefined.
      * @param {int} pos Location of the error.
      * @param {String} msg Error message.
