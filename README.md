@@ -7,7 +7,7 @@ UMD package.
 Method 1 - Install as node module 
 ----------------------------
 
-1. Download the tarball file from google drive: [link](https://drive.google.com/file/d/1Qe_AOLkT_ZhNX5h2U08eU8OAO-hQiiJw)
+1. Download the tarball file from google drive: [link](https://drive.google.com/open?id=1XKI7hYtvbXx1vaKcy-jDK2wlZ2ZtCYmp)
 2. Run `npm install path/to/latex-to-photomath-1.0.0.tgz`
 3. LTP can now be accessed as
         const latexToPhotomath = require("latex-to-photomath");
@@ -15,10 +15,18 @@ Method 1 - Install as node module
 Method 2 - Install by direct loading
 ----------------------------
 
-1. Download the bundle from google drive: [link](https://drive.google.com/open?id=1pDHNjFIPn6femwcTkyusV1xoVCZFmHT3)
+1. Download the bundle from google drive: [link](https://drive.google.com/open?id=1em7HbldwEwO-0hlw7KKQNyC5vPSN6kgf)
 2. Load the bundle into the site:
         <script src="ltp.js"></script>
 3. The latexToPhotomath function becomes available globally.
+
+Method 3 - Install for development (Use this method to view source code)
+-----------------------------
+
+This method is similar to Method 1, except that the tarball contains source files.
+
+1. Download the tarball file from google drive: [link](https://drive.google.com/open?id=1f1r4PraXFQpgJmqIJNB5y6wQ5saEb9LK)
+2. Run `npm install path/to/latex-to-photomath-1.0.0.tgz`
 
 How to use
 ==============================
