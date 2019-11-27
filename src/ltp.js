@@ -15,7 +15,7 @@ const LtpError = require("./errors/ltp_error");
  * @returns {String} Photomath solver syntax representation of inputText, or error message.
  * @throws {LtpError} User-friendly error message in err.message. Identify by err.name = "LtpError".
  */
-function ltp(inputText) {
+function latexToPhotomath(inputText) {
     let cleaned, parsed, translated;
     try {
         cleaned = cleaner.clean(inputText);
@@ -27,4 +27,4 @@ function ltp(inputText) {
     }
 }
 
-module.exports = ltp;
+module.exports = latexToPhotomath;
